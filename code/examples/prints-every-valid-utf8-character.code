@@ -1,0 +1,12 @@
+# from https://en.wikipedia.org/wiki/UTF-8
+# one byte
+( 0 | to (2 | power 7)) | pack "U*" | show
+# two bytes
+(0 | to (2 | power 5)) | map b1 {
+  (0 | to (2 | power 6)) | map b2 {
+    [
+      2 | power 8 | plus (2 | power 7) | plus b1,
+      2 | power 8 | plus b2
+    ]
+  }
+} | flatten | pack 'U*' | show
