@@ -1,6 +1,0 @@
-#!/usr/bin/coffee
-
-fs = require 'fs'
-Code = require 'code'
-
-console.log(JSON.stringify(Code.parse(fs.readFileSync(0).toString()), 2, null))

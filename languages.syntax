@@ -1,0 +1,43 @@
+code =
+  value:value?
+  methods:method*
+  { return { value, methods } }
+
+space = " "
+spaces = space*
+string_delimiter = '"'
+method_start = "|"
+character = .
+
+value =
+  value:(
+    string /
+    variable
+  )
+  spaces
+  { return { value } }
+
+string =
+  spaces
+  string_delimiter
+  string:$(!string_delimiter character)*
+  string_delimiter
+  spaces
+  { return { string } }
+
+variable =
+  spaces
+  name:name
+  spaces
+  { return { name } }
+
+method =
+  spaces
+  method_start
+  spaces
+  name:name
+  spaces
+  values:value*
+  { return { name, values } }
+
+name = $(!space character)+
