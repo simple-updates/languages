@@ -1,39 +1,37 @@
-$DEFINITIONS = {}
+require 'execjs'
 
 class Code_
-  attr_reader :_previous, :_arguments
+  attr_reader :_previous, :_arguments, :_block
 
-  def initialize(_previous = nil, _arguments = [])
+  def initialize(_previous = nil, _arguments = [], _block = -> {})
     @_previous = _previous
     @_arguments= _arguments
+    @_block = _block
   end
 
   def self._eval(_input)
     Code_.new._code_eval(_input)
   end
 
-  def self._class_eval(&block)
-    class_eval(&block)
+  def self._def(_previous, _arguments, &_block)
+    new._code_def(_previous, _arguments, &_block)
   end
 
-  def _instance_eval(&_block)
-    instance_eval(&_block)
+  def _eval
+    instance_eval(@_block)
   end
 
-  def self._code_def(*args, &block)
-    new._code_def(*args, &block)
+  def _define_method(_name, &block)
+    Code_.send(:define_method, "_code_#{_name}")
   end
 
   def _code_def(_previous, _arguments = [], &_block)
-    Code_._class_eval do
-      define_instance_method("_code_#{_previous}") do |_method_previous, _method_arguments = []|
-        _context = Code_.new(_method_previous, _method_arguments)
-        _context._instance_eval(&_block)
-      end
+    Code_.send(:define_method, "_code_#{_previous}") do |_m_previous, _m_arguments = []|
+      Code_.new(_m_previous, _m_arguments, _block)._eval
     end
   end
 
-  _code_def('eval') do
+  _def 'eval' do
     _previous.split(';').map do |_line|
       _line.split('|').map(&:strip).inject(nil) do |_result, _instruction|
         _name, _arguments = _instruction.split(' ', 2)
@@ -42,7 +40,7 @@ class Code_
     end.join
   end
 
-  _code_def('inputs') do
+  _def 'inputs' do
     if ARGV.any?
       ARGV.dup.tap { ARGV.clear }
     else
@@ -50,15 +48,15 @@ class Code_
     end
   end
 
-  _code_def('input') do
+  _def 'input' do
     _code_eval('inputs | join')
   end
 
-  _code_def('show') do
+  _def 'show'  do
     puts _previous
   end
 
-  _code_def('join') do
+  _def 'join' do
     _previous.join(" ")
   end
 end

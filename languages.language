@@ -1,0 +1,18 @@
+text =
+  (
+    open_tag
+    _
+    code:code
+    _
+    close_tag
+    { return { code } }
+  ) /
+  text:$(!open_tag .)+
+  { return { text } }
+
+_ = (space / newline)*
+space = " "
+newline = "\n"
+open_tag = "{"
+close_tag = "}"
+code = $(!close_tag .)+
