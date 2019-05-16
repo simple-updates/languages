@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
 
-require_relative '../_src/_code/_import.rb'
+require_relative '../_src/_code.rb'
 
-Code_::Context_._eval 'eval input'
+Code_._eval 'eval input'

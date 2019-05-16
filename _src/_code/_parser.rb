@@ -1,6 +1,6 @@
 require 'execjs'
 
-module Code_
+class Code_
   class Parser_
     PARSER_FILE_ = File.join(File.dirname(__FILE__), '../../_build/_languages.js')
 

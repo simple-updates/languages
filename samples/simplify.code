@@ -1,0 +1,20 @@
+load json
+
+define blank value (any to boolean) do
+  value equals nothing or
+    value equals empty string or
+    value equals empty list or
+    value equals empty dictionnary
+end
+
+define simplify value (any to any) do
+  with value as list if value is a list do
+    reject blank then simplify each element of list
+  else with value as dictionnary if value is a dictionnary do
+    reject blank then simplify each value of dictionnary
+  else
+    value
+  end
+end
+
+json.parse input then simplify then show

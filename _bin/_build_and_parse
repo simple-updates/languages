@@ -3,4 +3,4 @@
 set -e
 
 ./_bin/_build
-./_bin/_code "$@"
+./_bin/_parse "$@"

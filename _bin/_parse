@@ -1,0 +1,56 @@
+#!/usr/bin/env coffee
+
+_Languages = require('../_build/_languages.js')._Languages
+_Tracer = require '../_vendor/_pegjs-backtrace.js'
+
+_process = require 'process'
+_fs = require 'fs'
+
+_input = _process.argv.splice(2).join("\n")
+_input ||= _fs.readFileSync(0).toString()
+_input ||= throw("missing input")
+
+_json = (input) -> JSON.stringify(input, null, 2)
+
+_noop = () -> {}
+
+_log = (...args) ->
+  console.log(...args)
+
+_tracer = new _Tracer(_input,
+  showFullPath: true
+  matchesNode: (_node, _options) ->
+    if typeof _options._grep == "string" and not _node.path.includes(_options._grep)
+      false
+    else if typeof _options.nodeType == "string" and _node.type != _options._nodeType
+      false
+    else
+      true
+
+)
+
+_match_options = {
+  grep: process.env._GREP || null
+  nodeType: process.env._NODE_TYPE || null
+}
+
+try
+  _log(_json(_Languages.parse(_input, tracer: _tracer)))
+catch _error
+  _log(_tracer.getParseTreeString(_match_options))
+  _log(_error.message)
+  throw _error unless _error.location
+
+  if _error.location.start.line
+    _log(_input.split("\n")[_error.location.start.line - 1])
+  else
+    _log(_input)
+
+  _start = _error.location.start
+  _end = _error.location.end
+
+  _log('^'.padStart(_start.column, ' ').padEnd(_end.column, '^')) if _start
+  _log("#{_error.name}: at \"#{_error.found || ""}\" (#{_error.message})")
+
+  process.exit(1)
+

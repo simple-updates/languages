@@ -1,0 +1,15 @@
+load *
+
+def blank { arg0.in? [nothing empty(string) empty(list) empty(dictionnary)] }
+
+def simplify do
+  if arg0 is a list
+    args0.reject(:blank).map(:simplify)
+  else if arg0 is a dictionnary
+    args0.reject k v { blank(v) }.transform_values(:simplify)
+  else
+    args0
+  end
+end
+
+json.parse(input) | simplify | show

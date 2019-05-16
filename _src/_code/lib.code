@@ -1,0 +1,3 @@
+define input {
+  eval "join inputs"
+}

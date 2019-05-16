@@ -1,52 +1,73 @@
-code = (
-  expressions:expression+
-  { return { expressions } } /
-  (
-    open_code
+code =
+  first_code:(
+    instruction:instruction
+    { return { instruction } } /
+    group_begin
+    code:code
+    group_end
+    { return code }
+  )
+  _
+  other_codes:(
+    _
+    instruction_separator
+    _
+    code:code
+    { return code }
+  )*
+  { return [first_code].concat(...other_codes) }
+
+_ = (" " / "\n")*
+space = " "
+newline = "\n"
+instruction_separator = ";"
+group_begin = "("
+group_end = ")"
+
+instruction =
+  name:name
+  _
+  parameters:(
+    value /
+    code
+  )*
+  _
+  block:(
+    _
+    block_begin
     _
     code:code
     _
-    close_code
+    block_end
     { return code }
-  )
-)
+  )?
+  { return { name, parameters, block } }
 
-space = " "
-newline = "\n"
-open_code = "{"
-close_code = "}"
-open_group = "("
-close_group = ")"
-
-_ = (space / newline)*
+block_begin = "do"
+block_end = "end"
 
 name =
-  $(
-    !space
-    !open_code
-    !close_code
-    !open_group
-    !close_group
+  name:$(
+    !(
+      space /
+      newline /
+      block_begin /
+      block_end /
+      group_begin /
+      group_end /
+      instruction_separator
+    )
     .
   )+
-
-expression =
-  _
-  name:name
-  _
-  values:value+
-  _
-  { return { name, values } }
+  { return name }
 
 value =
+  _
   value:(
-    nothing:nothing /
-    boolean:boolean /
-    number:number /
-    string:string /
-    list:list /
-    object:object /
-    name:name
+    nothing /
+    boolean /
+    number /
+    string
   )
   { return { value } }
 
@@ -55,7 +76,10 @@ nothing =
   { return { nothing } }
 
 boolean =
-  boolean:(true / false)
+  boolean:(
+    true /
+    false
+  )
   { return { boolean } }
 
 true = "true"
@@ -73,79 +97,19 @@ number =
         digit /
         digit_separator
       )+
-    )
-  )+
+    )?
+  )
   { return { number } }
 
 digit = [0-9]
 digit_separator = "_"
-digit_decimal_separator = "," / "."
+digit_decimal_separator = "."
 
 string =
-  open_string
-  (!close_string text:text)+
-  close_string
-  { return text }
+  string_begin
+  string:$(!string_end .)+
+  string_end
+  { return { string } }
 
-open_string = '"'
-close_string = open_string
-
-text = .
-
-list =
-  list:(
-    _
-    open_list
-    _
-    first_value:value?
-    _
-    other_values:(
-      list_separator
-      _
-      value:value
-      _
-      { return value }
-    )*
-    _
-    close_list
-    _
-    { return [...first_value, ...other_values] }
-  )
-  { return { list } }
-
-open_list = "["
-close_list = "]"
-list_separator = ","
-
-object =
-  object:(
-    _
-    open_object
-    _
-    first_key_value:key_value?
-    _
-    key_values:(
-      list_separator
-      _
-      key_value:key_value
-      _
-    )*
-    close_object
-    _
-  )
-  { return { object } }
-
-open_object = "{"
-close_object = "}"
-
-key_value =
-  _
-  name:name
-  _
-  key_value_separator
-  _
-  value:value
-  _
-  { return { name, value } }
-
-key_value_separator = ":"
+string_begin = '"'
+string_end = string_begin
