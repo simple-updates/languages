@@ -1,5 +1,3 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env code
 
-load './lib'
-
-code 'input | show'
+input | eval
