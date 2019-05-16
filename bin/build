@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+
+pegjs languages.language -f globals --export-var=Languages -o build/languages.js

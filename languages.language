@@ -1,18 +1,24 @@
-text =
-  (
-    open_tag
-    _
-    code:code
-    _
-    close_tag
-    { return { code } }
-  ) /
-  text:$(!open_tag .)+
-  { return { text } }
+code = (
+  _
+  identifier:identifier
+  _
+  { return { identifier } }
+)
 
-_ = (space / newline)*
 space = " "
 newline = "\n"
-open_tag = "{"
-close_tag = "}"
-code = $(!close_tag .)+
+open_code = "{"
+close_code = "}"
+open_group = "("
+close_group = ")"
+
+_ = (space / newline)*
+
+identifier =
+  $(
+    !open_code
+    !close_code
+    !open_group
+    !close_group
+    .
+  )+
