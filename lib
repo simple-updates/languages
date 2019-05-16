@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+
+def code(_input)
+  _input.split('|').map(&:strip).inject(nil) do |_result, _instruction|
+    _name, *_arguments = _instruction.split
+    method(:"code_#{_name}").call(_result, *_arguments)
+  end
+end
+
+def code_input(_result, *_arguments)
+  if ARGV.any?
+    ARGV.join(' ')
+  else
+    STDIN.each_line.to_a.join
+  end
+end
+
+def code_show(_result, *_arguments)
+  puts _result
+end
