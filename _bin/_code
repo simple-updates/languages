@@ -1,5 +1,5 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env coffee
 
-require_relative '../_src/_code.rb'
+Code = require '../_src/_code.coffee'
 
-Code_._eval 'eval input'
+Code_._eval 'eval(input)'
