@@ -17,7 +17,7 @@ module Code_
     end
 
     def _eval
-      instance_eval(&@_block)
+      instance_eval(&_block)
     end
 
     def _parser
@@ -37,10 +37,6 @@ module Code_
     _def 'eval' do
       _parser._parse(_before).map do |_type, _value|
         p({ _type => _value })
-        # _line.split('|').map(&:strip).inject(nil) do |_result, _instruction|
-        #   _name, _arguments = _instruction.split(' ', 2)
-        #  method(:"_code_#{_name}").call(_result, _arguments)
-        # end
       end
     end
 

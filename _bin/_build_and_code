@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+set -e
+
+./_bin/_build
+./_bin/_code $@

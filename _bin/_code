@@ -2,4 +2,4 @@
 
 require_relative '../_src/_code/_import.rb'
 
-Code_::Context_._eval 'input | eval'
+Code_::Context_._eval 'eval input'
