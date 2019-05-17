@@ -1,5 +1,7 @@
 #!/usr/bin/env coffee
 
-Code = require '../_src/_code.coffee'
+_log = console.log
+
+Code_ = require '../_src/_code.coffee'
 
 Code_._eval 'eval(input)'
