@@ -27,10 +27,7 @@ group_end = ")"
 instruction =
   name:name
   _
-  parameters:(
-    value /
-    code
-  )*
+  parameters:parameter*
   _
   block:(
     _
@@ -113,3 +110,6 @@ string =
 
 string_begin = '"'
 string_end = string_begin
+
+parameter =
+  code

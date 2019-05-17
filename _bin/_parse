@@ -1,55 +1,26 @@
 #!/usr/bin/env coffee
 
-_Languages = require '../_build/_languages.js'
-_Tracer = require '../_vendor/_pegjs-backtrace.js'
+_ = require '../_src/_'
 
-_process = require 'process'
-_fs = require 'fs'
+{ Tracer_, _tracer_options } = _.require '_src/_code/_tracer.coffee'
+Parser_ = _.require '_src/_code/_parser.coffee'
 
-_input = _process.argv.splice(2).join("\n")
-_input ||= _fs.readFileSync(0).toString()
-_input ||= throw("missing input")
-
-_json = (input) -> JSON.stringify(input, null, 2)
-
-_noop = () -> {}
-
-_log = (...args) ->
-  console.log(...args)
-
-_tracer = new _Tracer(_input,
-  showFullPath: true
-  matchesNode: (_node, _options) ->
-    if typeof _options._grep == "string" and not _node.path.includes(_options._grep)
-      false
-    else if typeof _options.nodeType == "string" and _node.type != _options._nodeType
-      false
-    else
-      true
-)
+_input = _.input()
+_tracer = new Tracer_(_input, _tracer_options)
 
 _match_options = {
-  grep: process.env._GREP || null
-  nodeType: process.env._NODE_TYPE || null
+  grep: _.env._GREP || null
+  nodeType: _.env._NODE_TYPE || null
 }
 
 try
-  _log(_json(_Languages.parse(_input, tracer: _tracer)))
+  _.log(_.json.pretty(new Parser_(_input, _tracer)._parse()))
 catch _error
-  _log(_tracer.getParseTreeString(_match_options))
-  _log(_error.message)
-  throw _error unless _error.location
-
-  if _error.location.start.line
-    _log(_input.split("\n")[_error.location.start.line - 1])
-  else
-    _log(_input)
-
+  _.log(_tracer.getParseTreeString(_match_options))
+  _.log(_error.message)
+  _.log(_input.split("\n")[_error.location.start.line - 1])
   _start = _error.location.start
   _end = _error.location.end
-
-  _log('^'.padStart(_start.column, ' ').padEnd(_end.column, '^')) if _start
-  _log("#{_error.name}: at \"#{_error.found || ""}\" (#{_error.message})")
-
-  process.exit(1)
-
+  _.log('^'.padStart(_start.column, ' ').padEnd(_end.column, '^')) if _start
+  _.log("#{_error.name}: at \"#{_error.found || ""}\" (#{_error.message})")
+  _.exit()
