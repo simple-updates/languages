@@ -1,3 +1,5 @@
+_ = require '../_'
+
 class RuntimeError_ extends Error
   constructor: (@_type, @_context) ->
     super()

@@ -1,6 +1,6 @@
 #!/usr/bin/env coffee
 
-_Languages = require('../_build/_languages.js')._Languages
+_Languages = require '../_build/_languages.js'
 _Tracer = require '../_vendor/_pegjs-backtrace.js'
 
 _process = require 'process'
@@ -26,7 +26,6 @@ _tracer = new _Tracer(_input,
       false
     else
       true
-
 )
 
 _match_options = {
